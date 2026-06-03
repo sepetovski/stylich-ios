@@ -1,0 +1,5 @@
+.env
+*.xcuserstate
+xcuserdata/
+DerivedData/
+.DS_Store

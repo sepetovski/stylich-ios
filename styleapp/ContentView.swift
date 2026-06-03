@@ -1,21 +1,19 @@
-//
-//  ContentView.swift
-//  styleapp
-//
-//  Created by NCAdevice2 on 03/06/2026.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var auth = AuthService()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if auth.isLoggedIn {
+                MainTabView(auth: auth)
+            } else {
+                LoginView(auth: auth)
+            }
         }
-        .padding()
+        .task {
+            await auth.checkSession()
+        }
     }
 }
 
