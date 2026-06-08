@@ -7,8 +7,41 @@ class FeedService: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage = ""
 
+    private var page = 0
+    private let pageSize = 20
+    private var hasMore = true
+
     func fetchFeed() async {
+        guard !isLoading else { return }
+        page = 0
+        hasMore = true
         await MainActor.run { self.isLoading = true }
+        let fetched = await loadPage(page: 0)
+        await MainActor.run {
+            self.items = fetched
+            self.isLoading = false
+        }
+    }
+
+    func fetchMore() async {
+        guard !isLoading, hasMore else { return }
+        await MainActor.run { self.isLoading = true }
+        let nextPage = page + 1
+        let fetched = await loadPage(page: nextPage)
+        await MainActor.run {
+            if fetched.isEmpty {
+                self.hasMore = false
+            } else {
+                self.page = nextPage
+                self.items.append(contentsOf: fetched)
+            }
+            self.isLoading = false
+        }
+    }
+
+    private func loadPage(page: Int) async -> [FeedItem] {
+        let from = page * pageSize
+        let to = from + pageSize - 1
 
         do {
             let p1: [[String: AnyJSON]] = try await supabase
@@ -17,7 +50,7 @@ class FeedService: ObservableObject {
                 .in("status", values: ["voting", "judged"])
                 .not("p1_score", operator: .is, value: AnyJSON.null)
                 .order("judged_at", ascending: false)
-                .limit(20)
+                .range(from: from, to: to)
                 .execute()
                 .value
 
@@ -27,7 +60,7 @@ class FeedService: ObservableObject {
                 .in("status", values: ["voting", "judged"])
                 .not("p2_score", operator: .is, value: AnyJSON.null)
                 .order("judged_at", ascending: false)
-                .limit(20)
+                .range(from: from, to: to)
                 .execute()
                 .value
 
@@ -68,16 +101,11 @@ class FeedService: ObservableObject {
             }
 
             results.sort { $0.score > $1.score }
+            return results
 
-            await MainActor.run {
-                self.items = results
-                self.isLoading = false
-            }
         } catch {
-            await MainActor.run {
-                self.errorMessage = error.localizedDescription
-                self.isLoading = false
-            }
+            await MainActor.run { self.errorMessage = error.localizedDescription }
+            return []
         }
     }
 }

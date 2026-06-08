@@ -10,11 +10,11 @@ struct MainTabView: View {
                     Label("Feed", systemImage: "flame.fill")
                 }
 
-            Text("Arena")
+            ArenaView()
                 .tabItem {
                     Label("Arena", systemImage: "bolt.fill")
                 }
-
+            
             ProfileView(auth: auth)
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")
