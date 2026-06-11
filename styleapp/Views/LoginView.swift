@@ -5,6 +5,8 @@ struct LoginView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
+    @State private var showSignUp = false
+    
 
     var body: some View {
         ZStack {
@@ -22,6 +24,9 @@ struct LoginView: View {
                     Text("drop a fit. mog the queue.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                        .sheet(isPresented: $showSignUp) {
+                            SignUpView(auth: auth)
+                        }
                 }
 
                 // Fields
@@ -76,6 +81,14 @@ struct LoginView: View {
                 .disabled(isLoading)
 
                 Spacer()
+                
+                Button {
+                    showSignUp = true
+                } label: {
+                    Text("New here? Create an account")
+                        .font(.subheadline)
+                        .foregroundColor(Color("AccentColor"))
+                }
             }
         }
     }

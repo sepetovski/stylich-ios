@@ -14,7 +14,12 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Arena", systemImage: "bolt.fill")
                 }
-            
+
+            MyBattlesView()
+                .tabItem {
+                    Label("Battles", systemImage: "shield.fill")
+                }
+
             ProfileView(auth: auth)
                 .tabItem {
                     Label("Profile", systemImage: "person.fill")

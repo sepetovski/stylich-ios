@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 import Combine
 import Supabase
 import UIKit
@@ -78,12 +79,14 @@ class BattleService: ObservableObject {
                let errorMsg = errorResponse["error"] {
                 throw NSError(domain: "Stylich", code: 0, userInfo: [NSLocalizedDescriptionKey: errorMsg])
             }
-
             let result = try JSONDecoder().decode(BattleResponse.self, from: data)
 
             await MainActor.run {
+                let status = result.status ?? "waiting"
+                let score = result.score ?? 0
+
                 self.battleResult = BattleResult(
-                    status: result.status ?? "waiting",
+                    status: status,
                     battleId: result.battleId ?? "",
                     score: result.score,
                     feedback: result.feedback ?? result.message,
@@ -92,6 +95,49 @@ class BattleService: ObservableObject {
                     isWinner: result.isWinner
                 )
                 self.isLoading = false
+
+                // Show notification
+                switch status {
+                case "judged":
+                    if result.isWinner == true {
+                        NotificationManager.shared.show(
+                            title: "You won! 👑",
+                            message: "Your fit scored \(score) and crushed the opponent!",
+                            icon: "crown.fill",
+                            color: .green
+                        )
+                    } else if result.isWinner == false {
+                        NotificationManager.shared.show(
+                            title: "Battle lost",
+                            message: "Your fit scored \(score) — keep grinding!",
+                            icon: "bolt.fill",
+                            color: .red
+                        )
+                    } else {
+                        NotificationManager.shared.show(
+                            title: "It's a draw!",
+                            message: "Both fits scored \(score) — too close to call!",
+                            icon: "equal.circle.fill",
+                            color: Color("AccentColor")
+                        )
+                    }
+                case "waiting":
+                    NotificationManager.shared.show(
+                        title: "Fit dropped! 🔥",
+                        message: "Scored \(score) — waiting for an opponent...",
+                        icon: "hourglass.fill",
+                        color: Color("AccentColor")
+                    )
+                case "queued":
+                    NotificationManager.shared.show(
+                        title: "You're in the queue ⏳",
+                        message: "AI is busy — we'll judge your fit shortly!",
+                        icon: "clock.fill",
+                        color: .orange
+                    )
+                default:
+                    break
+                }
             }
 
         } catch {
@@ -100,6 +146,7 @@ class BattleService: ObservableObject {
                 self.isLoading = false
             }
         }
+
     }
 }
 
