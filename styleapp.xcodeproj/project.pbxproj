@@ -14,9 +14,22 @@
 		3370094B2FCFA33B00CC537F /* styleapp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = styleapp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		334500C82FE57ADD00ED3E90 /* Exceptions for "styleapp" folder in "styleapp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 3370094A2FCFA33B00CC537F /* styleapp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		3370094D2FCFA33B00CC537F /* styleapp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				334500C82FE57ADD00ED3E90 /* Exceptions for "styleapp" folder in "styleapp" target */,
+			);
 			path = styleapp;
 			sourceTree = "<group>";
 		};
@@ -272,6 +285,8 @@
 				DEVELOPMENT_TEAM = P947GSHBSQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = styleapp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Stylich needs camera access so you can snap your outfit for battles.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -305,6 +320,8 @@
 				DEVELOPMENT_TEAM = P947GSHBSQ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = styleapp/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Stylich needs camera access so you can snap your outfit for battles.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

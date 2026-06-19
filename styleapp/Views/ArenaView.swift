@@ -4,6 +4,8 @@ struct ArenaView: View {
     @ObservedObject var battleManager: BattleManager
     @State private var selectedImage: UIImage? = nil
     @State private var showImagePicker = false
+    @State private var showCamera = false
+    @State private var showSourceDialog = false
     @State private var selectedCategory = "casual"
     @State private var showCrop = false
     @State private var rawImage: UIImage? = nil
@@ -27,7 +29,7 @@ struct ArenaView: View {
                 .padding(.top, 48)
 
                 Button {
-                    showImagePicker = true
+                    showSourceDialog = true
                 } label: {
                     ZStack {
                         RoundedRectangle(cornerRadius: 24)
@@ -96,8 +98,23 @@ struct ArenaView: View {
                 Spacer()
             }
         }
+        .confirmationDialog("Add your fit", isPresented: $showSourceDialog, titleVisibility: .visible) {
+            if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                Button("Take Photo") {
+                    showCamera = true
+                }
+            }
+            Button("Choose from Library") {
+                showImagePicker = true
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(image: $rawImage)
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            CameraPicker(image: $rawImage)
+                .ignoresSafeArea()
         }
         .fullScreenCover(isPresented: $showCrop) {
             if let raw = rawImage {
@@ -113,6 +130,7 @@ struct ArenaView: View {
         .onChange(of: rawImage) { newImage in
             if newImage != nil {
                 showImagePicker = false
+                showCamera = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     showCrop = true
                 }
