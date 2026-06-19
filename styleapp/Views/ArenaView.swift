@@ -1,11 +1,10 @@
 import SwiftUI
 
 struct ArenaView: View {
-    @StateObject private var battleService = BattleService()
+    @ObservedObject var battleManager: BattleManager
     @State private var selectedImage: UIImage? = nil
     @State private var showImagePicker = false
     @State private var selectedCategory = "casual"
-    @State private var showResult = false
     @State private var showCrop = false
     @State private var rawImage: UIImage? = nil
 
@@ -17,7 +16,6 @@ struct ArenaView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
-                // Title
                 VStack(spacing: 6) {
                     Text("Arena")
                         .font(.system(size: 32, weight: .bold))
@@ -28,7 +26,6 @@ struct ArenaView: View {
                 }
                 .padding(.top, 48)
 
-                // Photo picker
                 Button {
                     showImagePicker = true
                 } label: {
@@ -57,7 +54,6 @@ struct ArenaView: View {
                     }
                 }
 
-                // Category picker
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 8) {
                         ForEach(categories, id: \.self) { cat in
@@ -78,44 +74,23 @@ struct ArenaView: View {
                     .padding(.horizontal, 24)
                 }
 
-                // Error message
-                if !battleService.errorMessage.isEmpty {
-                    Text(battleService.errorMessage)
-                        .foregroundColor(.red)
-                        .font(.caption)
-                        .padding(.horizontal, 32)
-                }
-
-                // Submit button
                 Button {
                     guard let image = selectedImage else { return }
+                    selectedImage = nil
+                    rawImage = nil
                     Task {
-                        await battleService.submitFit(image: image, category: selectedCategory)
-                        if battleService.battleResult != nil {
-                            showResult = true
-                            // Reset the arena after success
-                            selectedImage = nil
-                            rawImage = nil
-                        }
+                        await battleManager.submitFit(image: image, category: selectedCategory)
                     }
                 } label: {
-                    if battleService.isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color("AccentColor"))
-                            .cornerRadius(14)
-                    } else {
-                        Text("Enter the arena ⚔️")
-                            .fontWeight(.semibold)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(selectedImage == nil ? Color.gray.opacity(0.3) : Color("AccentColor"))
-                            .foregroundColor(selectedImage == nil ? .secondary : .black)
-                            .cornerRadius(14)
-                    }
+                    Text("Enter the arena ⚔️")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(selectedImage == nil ? Color.gray.opacity(0.3) : Color("AccentColor"))
+                        .foregroundColor(selectedImage == nil ? .secondary : .black)
+                        .cornerRadius(14)
                 }
-                .disabled(selectedImage == nil || battleService.isLoading)
+                .disabled(selectedImage == nil || battleManager.isUploading)
                 .padding(.horizontal, 32)
 
                 Spacer()
@@ -143,12 +118,5 @@ struct ArenaView: View {
                 }
             }
         }
-        .sheet(isPresented: $showResult) {
-            BattleResultView(result: battleService.battleResult!)
-        }
     }
-}
-
-#Preview {
-    ArenaView()
 }
