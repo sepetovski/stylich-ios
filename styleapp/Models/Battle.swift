@@ -15,6 +15,7 @@ struct Battle: Identifiable, Codable {
     let category: String?
     let judgedAt: String?
     let createdAt: String
+    var opponentUsername: String = "Opponent" // set after fetch, not from DB
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -31,5 +32,6 @@ struct Battle: Identifiable, Codable {
         case category
         case judgedAt = "judged_at"
         case createdAt = "created_at"
+        // opponentUsername intentionally excluded — set manually
     }
 }

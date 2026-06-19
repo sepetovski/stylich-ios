@@ -13,6 +13,7 @@ struct BattleResultView: View {
                 Spacer()
 
                 if result.status == "queued" {
+                    // queued UI
                     VStack(spacing: 16) {
                         Image(systemName: "clock.circle.fill")
                             .font(.system(size: 72))
@@ -28,9 +29,9 @@ struct BattleResultView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
                     }
-                }
-                if result.status == "waiting" {
-                    // Waiting for opponent
+
+                } else if result.status == "waiting" {
+                    // waiting UI
                     VStack(spacing: 16) {
                         Image(systemName: "hourglass.circle.fill")
                             .font(.system(size: 72))
@@ -40,7 +41,6 @@ struct BattleResultView: View {
                             .font(.title)
                             .fontWeight(.bold)
 
-                        // AI Score
                         if let score = result.score {
                             VStack(spacing: 4) {
                                 Text("\(score)")
@@ -52,13 +52,11 @@ struct BattleResultView: View {
                             }
                         }
 
-                        // AI Feedback
                         if let feedback = result.feedback {
                             Text(feedback)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                                 .multilineTextAlignment(.center)
-                                .padding(.horizontal, 32)
                                 .padding()
                                 .background(Color.gray.opacity(0.1))
                                 .cornerRadius(12)
@@ -71,9 +69,8 @@ struct BattleResultView: View {
                     }
 
                 } else {
-                    // Battle judged!
+                    // judged UI — only runs when status == "judged"
                     VStack(spacing: 16) {
-                        // Win / Loss
                         if let isWinner = result.isWinner {
                             Image(systemName: isWinner ? "crown.fill" : "bolt.fill")
                                 .font(.system(size: 72))
@@ -84,7 +81,6 @@ struct BattleResultView: View {
                                 .fontWeight(.bold)
                         }
 
-                        // Scores side by side
                         HStack(spacing: 32) {
                             VStack(spacing: 4) {
                                 Text("\(result.score ?? 0)")
@@ -94,11 +90,9 @@ struct BattleResultView: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
-
                             Text("vs")
                                 .font(.title2)
                                 .foregroundColor(.secondary)
-
                             VStack(spacing: 4) {
                                 Text("\(result.opponentScore ?? 0)")
                                     .font(.system(size: 48, weight: .bold))
@@ -112,7 +106,6 @@ struct BattleResultView: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(16)
 
-                        // Your feedback
                         if let feedback = result.feedback {
                             VStack(alignment: .leading, spacing: 6) {
                                 Text("StyleMogg says:")
